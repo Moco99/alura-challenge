@@ -2,8 +2,10 @@ from pathlib import Path
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+DOCS_DIR = Path(__file__).resolve().parent.parent / "data" / "docs"
+
 docs = []
-for pdf in Path("../data/docs").glob("*.pdf"):
+for pdf in DOCS_DIR.glob("*.pdf"):
     try:
         loader = PyMuPDFLoader(str(pdf))
         docs.extend(loader.load())
