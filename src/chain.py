@@ -6,21 +6,6 @@ from helper import GEMINI_API_KEY, GEMINI_MODEL
 from typing import List, TypedDict, Optional,Dict
 from pydantic import BaseModel
 from langchain_core.output_parsers import JsonOutputParser
-prompt_template = ChatPromptTemplate.from_template(
-    [
-        ("system",
-         """
-        Eres el especialista en responder preguntas de la empresa Santos Pegasus Soluciones.
-        Mas sobre la empresa:\n
-        'Empresa de tecnología especializada en el desarrollo de software escalable bajo arquitectura de microservicios y soluciones de Inteligencia Artificial (RAG). 
-        Se destaca por sus rigurosos estándares técnicos en ingeniería back-end y front-end, garantizando excelencia operativa y seguridad en infraestructuras de nube (OCI).'\n
-        Respondes siempre utilizando los conocimientos del contexto pasado a ti.
-        Si no hay informacion sobre la pregunta en el contexto, responde solo 'No lo se'.
-        
-        """),
-        ("human","Contexto:{context}\nPregunta del empleado: {input}")
-    ]
-)
 
 
 """
@@ -40,11 +25,33 @@ class LlmOut(BaseModel):
     pregunta : str
     respuesta: str
     citaciones: List[str]
-    documentos_encontrados: Optional[bool] = False
+    documentos_encontrados: bool
 
 parser_json = JsonOutputParser(
     pydantic_object=LlmOut
 )
+
+prompt_template = ChatPromptTemplate.from_messages(
+    [
+        ("system",
+         """
+        Eres el especialista en responder preguntas de la empresa Santos Pegasus Soluciones.
+        Mas sobre la empresa:\n
+        'Empresa de tecnología especializada en el desarrollo de software escalable bajo arquitectura de microservicios y soluciones de Inteligencia Artificial (RAG). 
+        Se destaca por sus rigurosos estándares técnicos en ingeniería back-end y front-end, garantizando excelencia operativa y seguridad en infraestructuras de nube (OCI).'\n
+        Respondes siempre utilizando los conocimientos del contexto pasado a ti.
+        Si no hay informacion sobre la pregunta en el contexto, responde solo 'No lo se'.
+        
+        """),
+        ("human","Contexto:{context}\nPregunta del empleado: {input}")
+    ]
+).partial(format_instructions=parser_json.get_format_instructions())
+
+def _citaciones_desde_documentos(documentos) -> List[str]:
+    return [
+        doc.metadata.get("source", f"documento_{i}")
+        for i, doc in enumerate(documentos)
+    ]
 
 class RagAgent():
     def __init__(self):
@@ -75,4 +82,9 @@ class RagAgent():
                 "documentos_encontrados": False
             }
 
-        return {**answer, "documentos_encontrados": True}
+        return {
+            "pregunta": pregunta,
+            "respuesta": answer["respuesta"],
+            "citaciones": _citaciones_desde_documentos(documentos_relacionados),
+            "documentos_encontrados": True
+        }
