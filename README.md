@@ -32,7 +32,7 @@ back-end y front-end, protocolo de incidentes y arquitectura de microservicios.
 ## Tecnologías
 
 Python, LangChain (`langchain-classic`, `langchain-google-genai`), FAISS,
-PyMuPDF, Gemini (`gemini-flash-lite-latest`), Streamlit, GoogleGenAIEmbeddings
+PyMuPDF, Gemini (`gemini-flash-lite-latest`), Streamlit, HuggingFaceEmbeddings
 
 ## Cómo ejecutarlo
 
