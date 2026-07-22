@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from vectorstore import VectorStore
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
@@ -49,11 +51,29 @@ prompt_template = ChatPromptTemplate.from_messages(
     ]
 ).partial(format_instructions=parser_json.get_format_instructions())
 
-def _citaciones_desde_documentos(documentos) -> List[str]:
-    return [
-        doc.metadata.get("source", f"documento_{i}")
-        for i, doc in enumerate(documentos)
-    ]
+DOCUMENT_LABELS = {
+    "1b414aa2-c5ca-40d4-8e9c-8d9e4dcdc955.pdf": "Protocolo de Respuesta a Incidentes y Post-Mortems",
+    "359dda5d-7daa-4aa1-832e-fb2843fcf70d.pdf": "Manual de Onboarding para Nuevos Desarrolladores",
+    "4a531743-36de-4b0b-b532-b5447b2c1ba7.pdf": "Guía Oficial de Ingeniería Back-end",
+    "a4266faf-77bf-4932-99b3-72e452051be2.pdf": "Guía Oficial de Ingeniería Front-end",
+    "ddb400f4-475a-4ddc-9ef3-a0cbb2789447.pdf": "Arquitectura de Microservicios y Mapa de Dominios",
+}
+
+
+def _citaciones_desde_documentos(documentos) -> List[dict]:
+    vistas = set()
+    citas = []
+    for doc in documentos:
+        nombre_archivo = Path(doc.metadata.get("source", "")).name
+        etiqueta_archivo = DOCUMENT_LABELS.get(nombre_archivo, nombre_archivo or "documento desconocido")
+        pagina = doc.metadata.get("page")
+        clave = (etiqueta_archivo, pagina)
+        if clave in vistas:
+            continue
+        vistas.add(clave)
+        etiqueta = f"{etiqueta_archivo} · pág. {pagina + 1}" if pagina is not None else etiqueta_archivo
+        citas.append({"etiqueta": etiqueta, "contenido": doc.page_content})
+    return citas
 
 class RagAgent():
     def __init__(self):

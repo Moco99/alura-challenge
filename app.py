@@ -34,17 +34,6 @@ h1, h2, h3 {
     border-radius: 10px;
 }
 
-.citation-tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    color: #B5652D;
-    background-color: #F1E4D8;
-    border-radius: 4px;
-    padding: 2px 6px;
-    margin-right: 4px;
-    display: inline-block;
-}
-
 .no-answer-badge {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.75rem;
@@ -61,6 +50,18 @@ def cargar_agente() -> RagAgent:
 
 
 agente = cargar_agente()
+
+
+def render_citas(citas: list) -> None:
+    if not citas:
+        return
+    columnas = st.columns(len(citas))
+    for columna, cita in zip(columnas, citas):
+        with columna:
+            with st.popover(cita["etiqueta"], icon=":material/link:", use_container_width=True):
+                st.caption("Fragmento citado")
+                st.write(cita["contenido"])
+
 
 with st.sidebar:
     st.markdown("### Pegasus Agente")
@@ -88,12 +89,7 @@ for mensaje in st.session_state.messages:
         st.write(mensaje["content"])
         if mensaje["role"] == "assistant":
             if mensaje.get("documentos_encontrados"):
-                tags = "".join(
-                    f'<span class="citation-tag">{c}</span>'
-                    for c in mensaje.get("citaciones", [])
-                )
-                if tags:
-                    st.markdown(tags, unsafe_allow_html=True)
+                render_citas(mensaje.get("citaciones", []))
             else:
                 st.markdown(
                     '<span class="no-answer-badge">Sin coincidencias en la documentación.</span>',
@@ -112,12 +108,7 @@ if pregunta:
             resultado = agente.busqueda_de_respuestas_RAG(pregunta)
         st.write(resultado["respuesta"])
         if resultado["documentos_encontrados"]:
-            tags = "".join(
-                f'<span class="citation-tag">{c}</span>'
-                for c in resultado["citaciones"]
-            )
-            if tags:
-                st.markdown(tags, unsafe_allow_html=True)
+            render_citas(resultado["citaciones"])
         else:
             st.markdown(
                 '<span class="no-answer-badge">Sin coincidencias en la documentación.</span>',
