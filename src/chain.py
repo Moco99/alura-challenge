@@ -41,7 +41,9 @@ prompt_template = ChatPromptTemplate.from_messages(
         Se destaca por sus rigurosos estándares técnicos en ingeniería back-end y front-end, garantizando excelencia operativa y seguridad en infraestructuras de nube (OCI).'\n
         Respondes siempre utilizando los conocimientos del contexto pasado a ti.
         Si no hay informacion sobre la pregunta en el contexto, responde solo 'No lo se'.
-        
+
+        Responde ÚNICAMENTE con un JSON que cumpla este formato:
+        {format_instructions}
         """),
         ("human","Contexto:{context}\nPregunta del empleado: {input}")
     ]
@@ -65,6 +67,7 @@ class RagAgent():
 
         if not documentos_relacionados:
             return  {
+            "pregunta": pregunta,
             "respuesta":"No lo se",
             "citaciones": [],
             "documentos_encontrados":False
@@ -77,6 +80,7 @@ class RagAgent():
 
         if answer["respuesta"].rstrip(".!?") == "No lo se":
             return {
+                "pregunta": pregunta,
                 "respuesta": "No lo se",
                 "citaciones": [],
                 "documentos_encontrados": False
