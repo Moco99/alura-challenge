@@ -62,5 +62,20 @@ def cargar_agente() -> RagAgent:
 
 agente = cargar_agente()
 
+with st.sidebar:
+    st.markdown("### Pegasus Agente")
+    st.write(
+        "Asistente interno de **Santos Pegasus Soluciones** para consultar "
+        "el manual de onboarding, las guías de ingeniería back-end y "
+        "front-end, el protocolo de incidentes y la arquitectura de "
+        "microservicios."
+    )
+    st.markdown("**Ejemplos de preguntas:**")
+    st.markdown(
+        "- ¿Qué debo hacer si hay un incidente en producción?\n"
+        "- ¿Qué lenguajes se usan en el back-end?\n"
+        "- ¿Cómo está organizada la arquitectura de microservicios?"
+    )
+
 st.title("Pegasus Agente")
 st.caption("Preguntas sobre documentación interna de Santos Pegasus Soluciones.")
