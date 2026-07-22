@@ -79,3 +79,56 @@ with st.sidebar:
 
 st.title("Pegasus Agente")
 st.caption("Preguntas sobre documentación interna de Santos Pegasus Soluciones.")
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for mensaje in st.session_state.messages:
+    with st.chat_message(mensaje["role"]):
+        st.write(mensaje["content"])
+        if mensaje["role"] == "assistant":
+            if mensaje.get("documentos_encontrados"):
+                tags = "".join(
+                    f'<span class="citation-tag">{c}</span>'
+                    for c in mensaje.get("citaciones", [])
+                )
+                if tags:
+                    st.markdown(tags, unsafe_allow_html=True)
+            else:
+                st.markdown(
+                    '<span class="no-answer-badge">Sin coincidencias en la documentación.</span>',
+                    unsafe_allow_html=True,
+                )
+
+pregunta = st.chat_input("Escribe tu pregunta...")
+
+if pregunta:
+    st.session_state.messages.append({"role": "user", "content": pregunta})
+    with st.chat_message("user"):
+        st.write(pregunta)
+
+    with st.chat_message("assistant"):
+        with st.spinner("Buscando en la documentación..."):
+            resultado = agente.busqueda_de_respuestas_RAG(pregunta)
+        st.write(resultado["respuesta"])
+        if resultado["documentos_encontrados"]:
+            tags = "".join(
+                f'<span class="citation-tag">{c}</span>'
+                for c in resultado["citaciones"]
+            )
+            if tags:
+                st.markdown(tags, unsafe_allow_html=True)
+        else:
+            st.markdown(
+                '<span class="no-answer-badge">Sin coincidencias en la documentación.</span>',
+                unsafe_allow_html=True,
+            )
+
+    st.session_state.messages.append(
+        {
+            "role": "assistant",
+            "content": resultado["respuesta"],
+            "citaciones": resultado.get("citaciones", []),
+            "documentos_encontrados": resultado.get("documentos_encontrados", False),
+        }
+    )
