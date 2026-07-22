@@ -9,12 +9,13 @@ back-end y front-end, protocolo de incidentes y arquitectura de microservicios.
 - **Ingesta** (`src/ingest.py`): carga los PDFs con `PyMuPDFLoader` y los
   divide en chunks con `RecursiveCharacterTextSplitter` (1000 chars, 150 de
   overlap).
-- **Vectorstore** (`src/vectorstore.py`): genera embeddings con
-  `GoogleGenerativeAIEmbeddings` y construye un índice FAISS. El índice se
-  persiste en `data/faiss_index/` — se calcula una sola vez; en arranques
-  posteriores se carga directo desde disco en vez de volver a llamar a la API
-  de embeddings. Expone un retriever con umbral de similitud
-  (`score_threshold=0.3`, `k=4`).
+- **Vectorstore** (`src/vectorstore.py`): genera embeddings localmente con
+  `HuggingFaceEmbeddings` (`paraphrase-multilingual-MiniLM-L12-v2`, sin costo
+  ni límite de requests) y construye un índice FAISS. El índice se persiste en
+  `data/faiss_index/` — se calcula una sola vez y queda commiteado en el repo;
+  tanto en local como en el deploy se carga directo desde disco, sin volver a
+  generar embeddings. Expone un retriever de similitud (`k=4`); la relevancia
+  final la decide el LLM según el prompt.
 - **Agente** (`src/chain.py`): arma una cadena LCEL
   (`create_stuff_documents_chain`) con Gemini y un `JsonOutputParser` para que
   la respuesta siempre llegue en el formato:
@@ -34,7 +35,7 @@ back-end y front-end, protocolo de incidentes y arquitectura de microservicios.
 Python, LangChain (`langchain-classic`, `langchain-google-genai`), FAISS,
 PyMuPDF, Gemini (`gemini-flash-lite-latest`), Streamlit, HuggingFaceEmbeddings
 
-## Cómo ejecutarlo
+## Cómo ejecutarlo localmente
 
 ```bash
 python -m venv .venv
@@ -55,4 +56,4 @@ cargan el índice ya guardado en `data/faiss_index/`.
 
 ## Deploy
 
-<!-- agregar capturas de la instancia en OCI y link publico aca -->
+<!-- agregar aquí el link público final y una captura de la app corriendo -->
