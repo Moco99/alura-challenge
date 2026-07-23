@@ -52,15 +52,20 @@ def cargar_agente() -> RagAgent:
 agente = cargar_agente()
 
 
+MAX_CITAS_POR_FILA = 4
+
+
 def render_citas(citas: list) -> None:
     if not citas:
         return
-    columnas = st.columns(len(citas))
-    for columna, cita in zip(columnas, citas):
-        with columna:
-            with st.popover(cita["etiqueta"], icon=":material/link:", use_container_width=True):
-                st.caption("Fragmento citado")
-                st.write(cita["contenido"])
+    for inicio in range(0, len(citas), MAX_CITAS_POR_FILA):
+        fila = citas[inicio:inicio + MAX_CITAS_POR_FILA]
+        columnas = st.columns(MAX_CITAS_POR_FILA)
+        for columna, cita in zip(columnas, fila):
+            with columna:
+                with st.popover(cita["etiqueta"], icon=":material/link:", use_container_width=True):
+                    st.caption("Fragmento citado")
+                    st.write(cita["contenido"])
 
 
 with st.sidebar:
