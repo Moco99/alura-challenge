@@ -26,5 +26,5 @@ class VectorStore():
             FAISS_INDEX_DIR.mkdir(parents=True, exist_ok=True)
             self.vectorstore.save_local(str(FAISS_INDEX_DIR))
 
-        retriever = self.vectorstore.as_retriever(search_kwargs={"k": 4})
+        retriever = self.vectorstore.as_retriever(search_kwargs={"k": 10})
         return retriever

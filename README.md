@@ -56,4 +56,41 @@ cargan el índice ya guardado en `data/faiss_index/`.
 
 ## Deploy
 
-<!-- agregar aquí el link público final y una captura de la app corriendo -->
+Corre en una instancia OCI Compute (Always Free). Pasos resumidos (ver
+`deploy/run.sh` y `deploy/pegasus-agente.service`):
+
+1. Cree una instancia Always Free (Ubuntu, VM.Standard.E2.1.Micro o Ampere A1)
+   en la consola de OCI y abri el puerto `8501` en la Security List/NSG de la
+   VCN.
+2. Hice SSH a la instancia, instale `git`, `python3-venv` y clone el repo.
+3. `python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`
+4. Se creo `.env` con `GEMINI_API_KEY` y `data/faiss_index/`
+   ya viene commiteado, así que no se vuelve a generar en el servidor.
+5. Copie `deploy/pegasus-agente.service` a `/etc/systemd/system/`
+
+   ```bash
+   sudo cp deploy/pegasus-agente.service /etc/systemd/system/
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now pegasus-agente
+   ```
+6. Se puede visitar en  `http://<ip-pública-de-la-instancia>:8501` en el navegador.
+
+### Recursos de OCI utilizados
+
+- **VCN (Virtual Cloud Network):** la red privada propia dentro de OCI donde
+  vive la instancia. Sin ella no hay dónde colocar el servidor.
+- **Internet Gateway:** la "puerta" que conecta la VCN con internet. Sin esto,
+  la VCN queda aislada aunque tenga subnet pública.
+- **Route Table:** las reglas de enrutamiento; le dice a la VCN "todo el
+  tráfico a `0.0.0.0/0` (internet) sale por el Internet Gateway".
+- **Subnet pública:** el segmento de red dentro de la VCN donde vive la
+  instancia, configurado para poder recibir una IP pública.
+- **Security List / NSG:** el firewall a nivel de red de OCI; sin abrir el
+  puerto `8501` aquí, nadie de fuera puede llegar a Streamlit aunque el
+  servidor esté corriendo.
+- **Instancia Compute:** la VM en sí (Ubuntu) donde corre el código.
+- **`pegasus-agente.service` (systemd):** mantiene Streamlit corriendo en
+  segundo plano y lo reinicia solo si se cae o si la VM se reinicia — sin
+  esto, el server muere al cerrar la sesión SSH.
+
+<!-- TODO: pegar aquí el link público final y 1-2 capturas de pantalla de la app corriendo en la instancia OCI -->
