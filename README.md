@@ -54,7 +54,7 @@ cargan el índice ya guardado en `data/faiss_index/`.
 
 ![Pegasus Agente respondiendo sobre back-end](imgs/PEGASUS_1.png)
 
-![Pegasus Agente con citas de fuente](imgs/PEGASUS_2.png)
+![Pegasus Agente con citas de fuente](imgs/PEGASUS_2_1.png)
 
 
 ## Deploy
