@@ -51,7 +51,10 @@ cargan el índice ya guardado en `data/faiss_index/`.
 
 ## Ejemplos de preguntas y respuestas
 
-<!-- debo agregar capturas aca -->
+
+![Pegasus Agente respondiendo sobre back-end](imgs/PEGASUS_1.png)
+
+![Pegasus Agente con citas de fuente](imgs/PEGASUS_2.png)
 
 
 ## Deploy
@@ -112,6 +115,3 @@ Corre en una instancia OCI Compute (Always Free). Pasos resumidos (ver
 
 **Link público:** http://159.54.152.46:8501
 
-![Pegasus Agente respondiendo sobre back-end](imgs/PEGASUS_1.png)
-
-![Pegasus Agente con citas de fuente](imgs/PEGASUS_2.png)
