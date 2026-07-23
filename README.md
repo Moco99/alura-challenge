@@ -14,7 +14,7 @@ back-end y front-end, protocolo de incidentes y arquitectura de microservicios.
   ni límite de requests) y construye un índice FAISS. El índice se persiste en
   `data/faiss_index/` — se calcula una sola vez y queda commiteado en el repo;
   tanto en local como en el deploy se carga directo desde disco, sin volver a
-  generar embeddings. Expone un retriever de similitud (`k=4`); la relevancia
+  generar embeddings. Expone un retriever de similitud (`k=10`); la relevancia
   final la decide el LLM según el prompt.
 - **Agente** (`src/chain.py`): arma una cadena LCEL
   (`create_stuff_documents_chain`) con Gemini y un `JsonOutputParser` para que
