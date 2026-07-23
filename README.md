@@ -79,18 +79,39 @@ Corre en una instancia OCI Compute (Always Free). Pasos resumidos (ver
 
 - **VCN (Virtual Cloud Network):** la red privada propia dentro de OCI donde
   vive la instancia. Sin ella no hay dónde colocar el servidor.
+
+  ![VCN en OCI](imgs/VCN_OCI.png)
+
 - **Internet Gateway:** la "puerta" que conecta la VCN con internet. Sin esto,
   la VCN queda aislada aunque tenga subnet pública.
+
+  ![Internet Gateway en OCI](imgs/IGW_OCI.png)
+
 - **Route Table:** las reglas de enrutamiento; le dice a la VCN "todo el
   tráfico a `0.0.0.0/0` (internet) sale por el Internet Gateway".
+
+  ![Route Table en OCI](imgs/RT_OCI.png)
+
 - **Subnet pública:** el segmento de red dentro de la VCN donde vive la
   instancia, configurado para poder recibir una IP pública.
+
+  ![Subnet pública en OCI](imgs/SN_OCI.png)
+
 - **Security List / NSG:** el firewall a nivel de red de OCI; sin abrir el
   puerto `8501` aquí, nadie de fuera puede llegar a Streamlit aunque el
   servidor esté corriendo.
 - **Instancia Compute:** la VM en sí (Ubuntu) donde corre el código.
+
+  ![Instancia Compute en OCI](imgs/INSTANCE_OCI.png)
+
 - **`pegasus-agente.service` (systemd):** mantiene Streamlit corriendo en
   segundo plano y lo reinicia solo si se cae o si la VM se reinicia — sin
   esto, el server muere al cerrar la sesión SSH.
 
-<!-- TODO: pegar aquí el link público final y 1-2 capturas de pantalla de la app corriendo en la instancia OCI -->
+### Evidencia del deploy
+
+**Link público:** http://159.54.152.46:8501
+
+![Pegasus Agente respondiendo sobre back-end](imgs/PEGASUS_1.png)
+
+![Pegasus Agente con citas de fuente](imgs/PEGASUS_2.png)
